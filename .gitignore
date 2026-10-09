@@ -1,0 +1,11 @@
+node_modules
+.next
+.DS_Store
+
+# Secrets and per-machine settings
+.env
+.env*.local
+
+# Local tooling
+.claude/
+.impeccable/
