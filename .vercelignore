@@ -1,0 +1,3 @@
+# Never upload local secrets with `vercel deploy`; keys are set as Vercel environment variables.
+.env
+.env*.local
