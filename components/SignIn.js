@@ -5,7 +5,7 @@ import { ID } from 'appwrite';
 import { account } from '../lib/appwrite';
 import { errorKey, useLang } from '../lib/i18n';
 import LanguageToggle from './LanguageToggle';
-import { AlertIcon } from './Icons';
+import { AlertIcon, LogoMark } from './Icons';
 
 export default function SignIn({ onSignedIn }) {
   const { t, lang } = useLang();
@@ -77,18 +77,19 @@ export default function SignIn({ onSignedIn }) {
 
   return (
     <main className="gate">
-      <div className="gate-bar">
+      <div className="gate-top">
+        <LogoMark size={32} />
         <LanguageToggle />
       </div>
 
-      <section className="gate-intro">
-        <h1>{t('appName')}</h1>
-        <p>{t('tagline')}</p>
+      <section className="gate-brand">
+        <h1 className="gate-name">{t('appName')}</h1>
+        <p className="gate-tagline">{t('tagline')}</p>
+        <p className="gate-statement">{t('gateStatement')}</p>
       </section>
 
       <section className="sheet" aria-labelledby={`${uid}-title`}>
-        <div className="stripe" aria-hidden="true" />
-        <div className="sheet-body">
+        <div>
           <h2 id={`${uid}-title`}>{t(creating ? 'createTitle' : 'signInTitle')}</h2>
 
           <form onSubmit={submit} noValidate>

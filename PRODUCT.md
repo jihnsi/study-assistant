@@ -24,12 +24,12 @@ Students upload their own course material, so privacy and trust matter at upload
 ## Capabilities and Constraints
 - Phase 1 scope: sign in (and create an account), upload a PDF, see stored PDFs. Nothing else is in scope yet.
 - Interface is bilingual, English and Chinese, from the start (user-confirmed). Assumed to be Traditional Chinese (Hong Kong); not yet confirmed.
-- App name is a placeholder: "Study Assistant". The product name is undecided.
+- App name: "Margin" in English, "旁註" in Chinese (decided with the user; replaces the placeholder "Study Assistant").
 - Language model is undecided (Jeffrey, proposed 16 October). Phase 1 does not depend on it.
 - Roles in the group: Nico (platform), Jeffrey (chat and model), Ching (documents), Anson (planner and UI).
 
 ## Brand Commitments
-None. No name, logo, voice or colours have been set.
+Name: Margin / 旁註. Concept: the margin of a school exercise book, where students write notes beside the text. Signature motif: a thin vermilion margin rule. Palette: paper, ink, pen-blue, vermilion red pen. Type: Newsreader and Noto Serif TC for display, Instrument Sans and Noto Sans TC for UI. Full detail in DESIGN.md. Voice: plain, specific, no hype.
 
 ## Evidence on Hand
 COM4101 Group 15 Project Plan (PDF). No user research, survey results, testimonials or real course files yet; do not fabricate any.

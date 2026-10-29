@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { ID, Permission, Role } from 'appwrite';
 import { BUCKET_ID, MAX_PDF_BYTES, storage } from '../lib/appwrite';
 import { errorKey, useLang } from '../lib/i18n';
-import { AlertIcon, CheckIcon } from './Icons';
+import { AlertIcon, CheckIcon, LockIcon, UploadIcon } from './Icons';
 
 export default function Upload({ user, onStored }) {
   const { t } = useLang();
@@ -64,8 +64,11 @@ export default function Upload({ user, onStored }) {
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
       >
+        <span className="drop-icon" aria-hidden="true">
+          <UploadIcon />
+        </span>
         <div className="drop-text">
-          <p>{t('dropHere')}</p>
+          <p className="drop-title">{t('dropHere')}</p>
           <p className="hint">{t('uploadHelp')}</p>
         </div>
         <input
@@ -119,7 +122,10 @@ export default function Upload({ user, onStored }) {
         </p>
       )}
 
-      <p className="hint">{t('privacy')}</p>
+      <p className="privacy">
+        <LockIcon />
+        <span>{t('privacy')}</span>
+      </p>
     </section>
   );
 }
