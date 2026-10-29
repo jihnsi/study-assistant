@@ -138,3 +138,13 @@ export function LogoMark({ size = 28 }) {
     </svg>
   );
 }
+
+export function SlidersIcon() {
+  return (
+    <svg {...base}>
+      <path d="M3.5 6h6M13.5 6h3M3.5 14h3M10.5 14h6" />
+      <circle cx="11.5" cy="6" r="2" />
+      <circle cx="8.5" cy="14" r="2" />
+    </svg>
+  );
+}

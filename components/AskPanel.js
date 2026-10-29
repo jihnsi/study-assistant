@@ -5,6 +5,8 @@ import { streamFromApi } from '../lib/api';
 import { apiErrorKey, useLang } from '../lib/i18n';
 import { useFrameThrottle } from '../lib/useFrameThrottle';
 import AiMarkdown from './AiMarkdown';
+import PrefsLink from './PrefsLink';
+import { usePrefs } from '../lib/prefs';
 import { AlertIcon, SendIcon, StopIcon } from './Icons';
 
 const MAX_QUESTION = 2000;
@@ -32,6 +34,7 @@ function historyFrom(turns) {
 export default function AskPanel({ fileId, pageCount, activePage, onCite }) {
   const { t, lang } = useLang();
   const fieldId = useId();
+  const { prefs } = usePrefs();
   const hintId = useId();
   const [turns, setTurns] = useState([]);
   const turnsRef = useRef([]);
@@ -296,6 +299,12 @@ export default function AskPanel({ fileId, pageCount, activePage, onCite }) {
             </button>
           )}
         </div>
+        <p className="hint dv-prefs-line">
+          {t('askPrefsLine')}
+          {!prefs.remember && ` · ${t('askMemoryOff')}`}
+          <span aria-hidden="true"> · </span>
+          <PrefsLink label={t('prefsEditLabel')}>{t('prefsEdit')}</PrefsLink>
+        </p>
       </form>
     </div>
   );

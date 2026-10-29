@@ -4,7 +4,7 @@ import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { BUCKET_ID, storage } from '../lib/appwrite';
 import { fetchPdfBlobUrl } from '../lib/api';
 import { apiErrorKey, useLang } from '../lib/i18n';
-import { readSummary } from '../lib/summary-cache';
+import { readPageCount } from '../lib/summary-cache';
 import LanguageToggle from './LanguageToggle';
 import PdfPane from './PdfPane';
 import SummaryPanel from './SummaryPanel';
@@ -165,7 +165,7 @@ export default function DocumentView({ fileId, initialFile, onBack, onMissing })
 
   // A summary saved earlier already knows the page count.
   useEffect(() => {
-    const known = readSummary(fileId, 'en')?.pageCount || readSummary(fileId, 'zh')?.pageCount;
+    const known = readPageCount(fileId);
     if (known) setPageCount(known);
   }, [fileId]);
 

@@ -3,9 +3,12 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { streamFromApi } from '../lib/api';
 import { apiErrorKey, useLang } from '../lib/i18n';
+import { summaryPrefsKey } from '../lib/prefs-schema';
+import { usePrefs } from '../lib/prefs';
 import { readSummary, writeSummary } from '../lib/summary-cache';
 import { useFrameThrottle } from '../lib/useFrameThrottle';
 import AiMarkdown from './AiMarkdown';
+import PrefsLink from './PrefsLink';
 import { AlertIcon, CheckIcon, CopyIcon, StopIcon } from './Icons';
 
 const IDLE = { phase: 'idle', text: '', errKey: null, streamErr: null, at: null };
@@ -14,6 +17,9 @@ const IDLE = { phase: 'idle', text: '', errKey: null, streamErr: null, at: null 
 export default function SummaryPanel({ fileId, pageCount, activePage, onCite, onPageCount }) {
   const { t, lang, locale } = useLang();
   const labelId = useId();
+  const { prefs, settled } = usePrefs();
+  // A saved summary is only shown for the preferences it was written with.
+  const prefsKey = summaryPrefsKey(prefs);
   // null = follow the interface language until the person picks (or a run starts).
   const [picked, setPicked] = useState(null);
   const sumLang = picked ?? lang;
@@ -28,14 +34,17 @@ export default function SummaryPanel({ fileId, pageCount, activePage, onCite, on
     useCallback((text) => setView((v) => (v.phase === 'streaming' ? { ...v, text } : v)), []),
   );
 
-  // Show a saved summary for this PDF and language if there is one.
+  // Show a saved summary for this PDF, language and preferences if there is one. Waits until the
+  // preferences have loaded (otherwise the cache key would be the default one), and never replaces
+  // the screen while a request is running.
   useEffect(() => {
-    const saved = readSummary(fileId, sumLang);
+    if (!settled || abortRef.current) return;
+    const saved = readSummary(fileId, sumLang, prefsKey);
     setView(saved ? { ...IDLE, phase: 'done', text: saved.text, at: saved.at } : IDLE);
     if (saved?.pageCount) onPageCount(saved.pageCount);
     setCopyState('idle');
     setLive('');
-  }, [fileId, sumLang, onPageCount]);
+  }, [fileId, sumLang, prefsKey, settled, onPageCount]);
 
   // Leaving the document ends any request in flight.
   useEffect(
@@ -49,6 +58,7 @@ export default function SummaryPanel({ fileId, pageCount, activePage, onCite, on
   async function run() {
     if (abortRef.current) return;
     const runLang = sumLang;
+    const runKey = prefsKey;
     setPicked(runLang); // fixed for this run, even if the interface language changes meanwhile
     const ac = new AbortController();
     abortRef.current = ac;
@@ -78,7 +88,7 @@ export default function SummaryPanel({ fileId, pageCount, activePage, onCite, on
         setLive('');
         setView({ ...IDLE, phase: 'error', errKey: 'apiErr_model_error' });
       } else {
-        const at = writeSummary(fileId, runLang, { text: res.text, pageCount: res.pageCount });
+        const at = writeSummary(fileId, runLang, runKey, { text: res.text, pageCount: res.pageCount });
         setView({ ...IDLE, phase: 'done', text: res.text, at });
         setLive(t('sumDone'));
       }
@@ -163,7 +173,7 @@ export default function SummaryPanel({ fileId, pageCount, activePage, onCite, on
               {t('sumStop')}
             </button>
           ) : (
-            <button type="button" className={runClass} onClick={run}>
+            <button type="button" className={runClass} onClick={run} disabled={!settled}>
               {runLabel}
             </button>
           )}
@@ -175,6 +185,12 @@ export default function SummaryPanel({ fileId, pageCount, activePage, onCite, on
           )}
         </div>
       </div>
+
+      <p className="hint dv-prefs-line">
+        {t('sumPrefsLine', { level: t(`level_${prefs.level}`), length: t(`length_${prefs.length}`) })}
+        <span aria-hidden="true"> · </span>
+        <PrefsLink label={t('prefsEditLabel')}>{t('prefsEdit')}</PrefsLink>
+      </p>
 
       <p className="visually-hidden" role="status" aria-live="polite">
         {live}

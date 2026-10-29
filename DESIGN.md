@@ -102,3 +102,16 @@ Plain, specific, sentence case, active voice. Errors say what happened and what 
 - Ask: question as a `--sunk` block aligned right, answer as plain `.md` below, turns separated by a hairline. Composer is sticky at the bottom of the panel.
 - Citation chips: `.cite` button, "p. 3" / "第 3 頁". A page past the PDF's page count renders as `.cite-off` (dashed, not clickable).
 - Streaming text is not a live region; a visually hidden `role="status"` announces start and finish.
+
+## Preferences view (as built)
+
+`components/Preferences.js`, opened with `?view=prefs` (it can sit on top of a document: `?doc=<id>&view=prefs`; the document stays mounted but hidden, so a running answer survives). `lib/prefs.js` holds the Appwrite read-modify-write helpers and `PrefsProvider` / `usePrefs()`; `lib/prefs-schema.js` holds the shape. CSS is the "Preferences view" block in `globals.css` (`.prefs-*`, `.pref-*`, `.mem*`, `.switch-track`).
+
+- **Entry**: a "Preferences" button (sliders icon + label; icon only under 400px, aria-label always) in the library header, grouped with Sign out in `.bar-actions`. In a document, the Summary and Ask tabs end with a small muted line ("Answers use your preferences · Edit", plus "Memory is off" when it is) that links to the view (`PrefsLink`, a real `<a href>` that navigates in place).
+- **Navigation**: same pushState / popstate approach as `?doc=`. Back uses `history.back()` when Preferences was opened inside the app, and replaces the entry when the page was loaded straight on `?view=prefs`. Scroll and focus return to where they were.
+- **Layout**: one narrow column (`--page-max: 46rem`), no cards: h2 sections ("How Margin explains", "Memory"), spacing carries the grouping. Segmented choices reuse `.seg` (`.seg-3` for three options) with a one-line description of the selected option.
+- **Switch**: `button.pref-switch[role="switch"][aria-checked]`, the whole row is the target, the label is its name. It saves immediately; the pen-blue track is the only colour.
+- **Memory list**: `ul.doc-list.mem-list > li.mem` (note text, a small `.mem-source` tag - From a question / From a PDF / Added by you - and the date, ghost "Edit" and red-pen "Forget"). Newest first, with "n / 50" above the list. "+ Add a note" and "Edit" open the same inline `.mem-form` (one `.field` input, max 200 characters, autofocus, Enter saves, Escape cancels, Save and Cancel buttons, empty text refused); focus returns to the opening control. Add is disabled at 50 with a short message. Notes are saved immediately through `addMemory` / `updateMemory` (re-read, change only `margin.memories`). "Forget everything" opens the same inline `.doc-confirm` as deleting a PDF (focus on Cancel, Escape cancels).
+- **Unsaved changes**: Back with edits shows an inline `.notice-info` (Leave without saving / Keep editing). No `window.confirm`. Browser Back cannot be intercepted, so it leaves silently.
+- **Honesty copy**: the memory note says Margin writes notes from questions and summarised PDFs, the student can edit them or add their own, they are stored in the account, only shape tone and examples (never facts), and can be deleted at any time. The note field warns against private details.
+- **Summary cache**: keys include `summaryPrefsKey(prefs)` (level and length), so a summary written before those change is not shown afterwards.
